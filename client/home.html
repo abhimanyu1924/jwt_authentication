@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+        }
+
+        .home-container {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Full width of the viewport */
+            max-width: 600px; /* Adjust as needed */
+            text-align: center;
+        }
+
+        .home-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .home-container button {
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 200px; /* Adjust button width as needed */
+            margin-bottom: 10px; /* Space between buttons */
+        }
+
+        .home-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <h2>Welcome</h2>
+        <div id="userInfo"></div>
+        <button id="logoutButton">Logout</button>
+        <button id="adminButton">Admin</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('accessToken');
+            const userInfoDiv = document.getElementById('userInfo');
+
+            if (!token) {
+                window.location.href = 'index.html'; // Redirect to login page if no token
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/home', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    userInfoDiv.textContent = `Logged in as: ${data.username}`;
+                } else {
+                    userInfoDiv.textContent = 'Failed to retrieve user information.';
+                }
+            } catch (error) {
+                console.error('An error occurred', error);
+                userInfoDiv.textContent = 'An error occurred. Please try again.';
+            }
+        });
+
+        document.getElementById('adminButton').addEventListener('click', () => {
+            window.location.href = 'admin.html'; // Redirect to admin page
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            window.location.href = 'index.html'; // Redirect to login page
+        });
+    </script>
+</body>
+</html>
